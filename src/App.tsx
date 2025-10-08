@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import Instructions from './components/screens/Instructions';
 import Ready from './components/screens/Ready';
-import Conversation from './components/screens/Conversation';
 import Quiz from './components/screens/Quiz';
 import Results from './components/screens/Results';
 import End from './components/screens/End';
+import type { ScoreEntry } from './interfaces/index';
 
 type Screen = 
   | 'instructions' 
@@ -16,17 +16,12 @@ type Screen =
   | 'end';
 
 function App() {
-  const [currentScreen, setCurrentScreen] = useState<Screen>('quiz');
-  // const [score, setScore] = useState(0);
+  const [currentScreen, setCurrentScreen] = useState<Screen>('instructions');
   const [currentLevel, setCurrentLevel] = useState(1);
-  const [scores, setScores] = useState<{ level: number; score: number; total: number }[]>([]);
+  const [scores, setScores] = useState<ScoreEntry[]>([]);
 
-  const handleNext = (newScore?: number) => {
-    if (newScore !== undefined) {
-      setScore(newScore);
-    }
-
-    const screens: Screen[] = ['instructions', 'ready', 'conversation', 'quiz', 'results', 'end'];
+  const handleNext = () => {
+    const screens: Screen[] = ['instructions', 'ready', 'quiz', 'results', 'end'];
     const currentIndex = screens.indexOf(currentScreen);
     
     if (currentIndex < screens.length - 1) {
@@ -42,11 +37,13 @@ function App() {
   const handleQuizNext = (score: number, level: number) => {
     setScores(prev => [...prev, { level, score, total: 3 }]);
     
+    // Logic to either go to the next quiz level or the final results screen
     if (level < 5) {
       setCurrentLevel(level + 1);
       setCurrentScreen('quiz');
     } else {
-      setCurrentScreen('results');
+      // All 5 levels are complete, show the final results screen
+      setCurrentScreen('results'); 
     }
   };
 
@@ -56,13 +53,10 @@ function App() {
         return <Instructions onNext={() => handleNext()} />;
       case 'ready':
         return <Ready onNext={() => handleNext()} />;
-      case 'conversation':
-        return <Conversation onNext={() => handleNext()} />;
       case 'quiz':
-        // return <Quiz onNext={(newScore) => handleNext(newScore)} />;
         return <Quiz onNext={handleQuizNext} currentLevel={currentLevel} />
-      // case 'results':
-        // return <Results score={score} onNext={() => handleNext()} />;
+      case 'results':
+        return <Results scores={scores} onNext={() => handleNext()} />;
       case 'end':
         return <End onRestart={handleRestart} />;
       default:
