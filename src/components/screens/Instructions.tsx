@@ -1,7 +1,6 @@
 import ScreenWrapper from '../ScreenWrapper';
 import { motion } from 'framer-motion';
 import Conversation1 from './../../assets/audios/dailylife001.mp3'
-import TinnitusSound1 from './../../assets/audios/tinnitus_sound_01.mp3'
 import AudioPlayer from '../AudioPlayer';
 
 interface InstructionsProps {
